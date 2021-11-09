@@ -1,12 +1,14 @@
-const express = require("express")
-const {urlencoded} = require("body-parser")
+const express = require("express");
+const {urlencoded} = require("body-parser");
 
-const usuariosRoutes = require('./usuariosRoutes')
+const usuariosRoutes = require('./usuariosRoutes');
+const postsRoutes = require('./postsRoutes');
 
 module.exports = app => {
- app.use(urlencoded({extended: true}))
- app.use(express.json())
+ app.use(urlencoded({extended: true}));
+ app.use(express.json());
 
- app.use(usuariosRoutes)
+ app.use(usuariosRoutes);
+ app.use(postsRoutes);
 
 }
