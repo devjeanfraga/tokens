@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "javascripts35",
+    "password": "javascript35",
     "database": "seguranca",
     "host": "127.0.0.1",
     "dialect": "mysql"

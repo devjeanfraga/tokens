@@ -1,9 +1,9 @@
 const express = require('express')
-const {urlencoded}  = require('body-parser')
+const routes = require('../src/routes')
 
 const app = express()
-app.use(urlencoded({extended: true}))
-app.use(express.json())
+routes(app)
 
 
 app.listen(3939, ()=> {console.log("api run on port 3939")})
+
