@@ -5,6 +5,7 @@ const router = Router()
 
 router.post('/usuarios', UsuariosControllers.add);
 router.get('/usuarios', UsuariosControllers.list);
+router.delete('/usuarios/:userID', UsuariosControllers.remove);
 
 
 

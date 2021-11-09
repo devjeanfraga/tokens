@@ -21,6 +21,16 @@ class UsuariosControllers {
     }
   }
 
+  static async remove (req, res) {
+    const  {userID} = req.params
+    try {
+       await db.usuarios.destroy({where: {id: Number(userID)}});
+       return res.status(204).json()
+    } catch (err) {
+      return res.status(500).json({message: "oops algo deu errado!"})
+    }
+  }
+
 
 }
 
