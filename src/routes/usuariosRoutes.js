@@ -3,7 +3,8 @@ const UsuariosControllers = require('../controllers/UsuariosControllers');
 
 const router = Router()
 
-router.post('/usuarios', UsuariosControllers.add)
+router.post('/usuarios', UsuariosControllers.add);
+router.get('/usuarios', UsuariosControllers.list);
 
 
 

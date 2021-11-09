@@ -12,7 +12,16 @@ class UsuariosControllers {
     }
   }
 
-  
+  static async list (req, res) {
+    try{
+        const allUsers = await db.usuarios.findAll();
+        return res.status(200).json(allUsers)
+    }catch (err) {
+      return res.status(500).json(err);
+    }
+  }
+
+
 }
 
 module.exports = UsuariosControllers
