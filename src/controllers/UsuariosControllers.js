@@ -1,13 +1,18 @@
-const db = require('../models')
+const db = require('../models');
+const bcrypt = require('bcrypt'); 
 
 class UsuariosControllers {
   static async add (req, res) {
     const {name, email, password} = req.body
     try{
-      const NewUser = await db.usuarios.create({name, email, password})
+
+      const custoHash = 12;
+      const senhaHash = await bcrypt.hash(password, custoHash)
+      const NewUser = await db.usuarios.create({name, email, password:senhaHash})
       return res.status(201).json(NewUser)
 
     }catch(err){
+      console.log(err)
       return res.json(err)
     }
   }
