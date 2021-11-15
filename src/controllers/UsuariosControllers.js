@@ -1,5 +1,16 @@
 const db = require('../models');
 const bcrypt = require('bcrypt'); 
+const jwt = require('jsonwebtoken')
+
+function criarWebToken (usuario) {
+  const payload = {
+    id: usuario.id
+  };
+
+  //Gera e assina o token baseado no payload
+  const token = jwt.sign(payload, process.env.KEY_JWT);
+  return token;
+}
 
 class UsuariosControllers {
   static async add (req, res) {
@@ -18,7 +29,13 @@ class UsuariosControllers {
   }
 
   static async login ( req, res) {
-    return res.status(204).send()
+    try {
+      const token = criarWebToken(req.user);
+      res.set('Authorization', token );
+      return res.status(204).send();
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   static async list (req, res) {
