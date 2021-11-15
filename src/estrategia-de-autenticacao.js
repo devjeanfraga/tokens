@@ -11,7 +11,7 @@ function verificaUsuario ( usuario) {
 };
 
 async function verificaPassword (password, passwordHash) {
-  const passwordValido = bcrypt.compare( password, passwordHash);
+  const passwordValido = await bcrypt.compare( password, passwordHash);
   if (!passwordValido) {
     throw new Error ('Email ou senha inválidos')
   }
@@ -25,11 +25,17 @@ passport.use(
     
 }, async (email, password, done) => {
     try {
-      const  usuario = await db.usuario.findOne({where: {email: email}});
+      const  usuario = await db.usuarios.findOne({where: {email: email}});
       verificaUsuario(usuario);
       await verificaPassword(password, usuario.password)
-
+     
+      done(null, usuario);
     } catch (err) {
       done(err)
     }
 }))
+
+
+module.exports =  {
+  estrategia_de_autenticacao: require('./estrategia-de-autenticacao.js')
+}

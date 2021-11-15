@@ -17,6 +17,10 @@ class UsuariosControllers {
     }
   }
 
+  static async login ( req, res) {
+    return res.status(204).send()
+  }
+
   static async list (req, res) {
     try{
         const allUsers = await db.usuarios.findAll();
