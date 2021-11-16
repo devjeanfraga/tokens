@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 function criarWebToken (usuario) {
   const payload = {
     id: usuario.id
+    //expiraEm: Date.now() + cincoDiasEmMilissegundos = 432000000
   };
 
   //Gera e assina o token baseado no payload
