@@ -1,5 +1,5 @@
 const passport = require('passport');
-const {JsonWebTokenError} = require('jsonwebtoken')
+const {JsonWebTokenError, TokenExpiredError} = require('jsonwebtoken')
 const InvalidArgumentError = require('./err/InvalidArgumentError');
 
 module.exports = {
@@ -28,16 +28,22 @@ module.exports = {
    passport.authenticate( 'bearer',
    { session: false },
    (erro, usuario, info)=> {
-     
+
     //Erros vindos do JWT.verify()
     if (erro && erro instanceof JsonWebTokenError) {
       return res.status(401).json( { erro: erro.message } );
       
-    } else if ( erro ) {
+    }
+    if ( erro && erro instanceof TokenExpiredError ) {
+      return res.status( 401 ).json( { erro: erro.message, expiradoEm: erro.expiredAt } )
+    } 
+    if ( erro ) {
       return res.status(500).json( { erro: erro.message } );
 
-    } else if ( !usuario ) {
+    }  
+    if ( !usuario ) {
       return res.status(401).json();
+
     }
 
     req.user = usuario;

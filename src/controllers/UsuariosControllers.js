@@ -2,40 +2,43 @@ const db = require('../models');
 const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken')
 
-function criarWebToken (usuario) {
+function criarWebToken ( usuario ) {
   const payload = {
     id: usuario.id
     //expiraEm: Date.now() + cincoDiasEmMilissegundos = 432000000
   };
 
   //Gera e assina o token baseado no payload
-  const token = jwt.sign(payload, process.env.KEY_JWT);
+  const token = jwt.sign( payload, process.env.KEY_JWT, { expiresIn: '10m' } );
   return token;
 }
 
 class UsuariosControllers {
-  static async add (req, res) {
-    const {name, email, password} = req.body
+  static async add ( req, res ) {
+    const {name, email, password} = req.body;
+
     try{
-
       const custoHash = 12;
-      const senhaHash = await bcrypt.hash(password, custoHash)
-      const NewUser = await db.usuarios.create({name, email, password:senhaHash})
-      return res.status(201).json(NewUser)
+      const senhaHash = await bcrypt.hash( password, custoHash );
+      const NewUser = await db.usuarios.create( { name, email, password:senhaHash } );
+      return res.status( 201 ).json( NewUser );
 
-    }catch(err){
-      console.log(err)
-      return res.json(err)
+    } catch ( err ){
+      console.log( err );
+      return res.json( err );
+
     }
   }
 
-  static async login ( req, res) {
+  static async login ( req, res ) {
     try {
-      const token = criarWebToken(req.user);
-      res.set('Authorization', token );
-      return res.status(204).send();
-    } catch (err) {
-      console.log(err)
+      const token = criarWebToken( req.user );
+      res.set( 'Authorization', token );
+      return res.status( 204 ).send();
+
+    } catch ( err ) {
+      console.log( err );
+
     }
   }
 
