@@ -3,6 +3,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const blacklist = require('../../redis/manipula-blacklist');
 
+const crypto =  require('crypto'); 
+const moment = require('moment'); 
+
+
 function criarWebToken ( usuario ) {
   const payload = {
     id: usuario.id
@@ -13,6 +17,13 @@ function criarWebToken ( usuario ) {
   const token = jwt.sign( payload, process.env.KEY_JWT, { expiresIn: '10m' } );
   return token;
 }
+
+function criaTokenOpaco (usuario) {
+  const tokenOpaco = crypto.randomBytes(24).toString('hex');
+  const dataExpiracao = moment().add(5, 'd').unix(); 
+  return tokenOpaco;
+}
+
 
 class UsuariosControllers {
   static async add ( req, res ) {
@@ -33,9 +44,10 @@ class UsuariosControllers {
 
   static async login ( req, res ) {
     try {
-      const token = criarWebToken( req.user );
-      res.set( 'Authorization', token );
-      return res.status( 204 ).send();
+      const accessToken = criarWebToken( req.user );
+      const refreshToken  = criaTokenOpaco();
+      res.set( 'Authorization', accessToken);
+      return res.status( 200 ).json({ RefreshToken: refreshToken});
 
     } catch ( err ) {
       console.log( err );
