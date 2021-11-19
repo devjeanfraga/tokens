@@ -8,7 +8,7 @@ router.post('/usuarios', UsuariosControllers.add);
 router.post('/usuarios/login', middlewareDeAuthenticacao.local, UsuariosControllers.login)
 router.get('/usuarios', UsuariosControllers.list);
 router.delete('/usuarios/:userID', middlewareDeAuthenticacao.bearer, UsuariosControllers.remove);
-
+router.get('/usuarios/logout', middlewareDeAuthenticacao.bearer, UsuariosControllers.logout)
 
 
 module.exports = router
