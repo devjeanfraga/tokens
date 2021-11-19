@@ -1,7 +1,7 @@
 const db = require('../models');
 const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken');
-const blacklist = require('../../redis/manipula-blacklist');
+const blocklist = require('../../redis/manipula-blocklist');
 
 const crypto =  require('crypto'); 
 const moment = require('moment'); 
@@ -58,7 +58,7 @@ class UsuariosControllers {
   static async logout ( req, res ) {
     try {
       const token = req.token; //esse token vem do middleware que é recupera da estratégia de autenticação. 
-      await blacklist.adiciona( token );
+      await blocklist.adiciona( token );
   
       return res.status(204).send();
     } catch (err) {

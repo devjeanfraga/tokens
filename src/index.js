@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const routes = require('../src/routes');
 
-require('../redis/blackList');
+require('../redis/blockList');
 
 const app = express();
 routes(app);

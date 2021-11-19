@@ -1,12 +1,12 @@
-const blacklist = require('./blackList');
-const blackList = require('./blackList');
+const blocklist = require('./blocklist');
+const blockList = require('./blocklist');
 const jwt = require('jsonwebtoken');
 
 const { createHash } = require('crypto');
 
 const { promisify } =  require('util');
-const existTokenAsync = promisify( blackList.exists ).bind( blacklist ); 
-const setAsycn = promisify( blackList.set ).bind( blacklist );
+const existTokenAsync = promisify( blockList.exists ).bind( blocklist ); 
+const setAsycn = promisify( blockList.set ).bind( blocklist );
 
 //Se como os tokens são grandes para serem chaves, a solução é gerar um hash para compactar a key
 function geraTokenHash (token) {
@@ -21,7 +21,7 @@ module.exports =  {
     const tokenHash = geraTokenHash(token);
 
     await setAsycn(tokenHash, '' );
-    blackList.expireat( tokenHash, dataDeExpiracao );
+    blockList.expireat( tokenHash, dataDeExpiracao );
 
   },
 
