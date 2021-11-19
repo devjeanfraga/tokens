@@ -3,7 +3,9 @@ require('dotenv').config();
 const express = require('express');
 const routes = require('../src/routes');
 
+//Inicialização Redis
 require('../redis/blockList');
+require('../redis/allowlist-refresh-token');
 
 const app = express();
 routes(app);

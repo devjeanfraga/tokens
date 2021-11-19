@@ -2,6 +2,7 @@ const db = require('../models');
 const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken');
 const blocklist = require('../../redis/manipula-blocklist');
+const allowlistRefreshToken = require('../../redis/allowlist-refresh-token'); 
 
 const crypto =  require('crypto'); 
 const moment = require('moment'); 
@@ -13,14 +14,18 @@ function criarWebToken ( usuario ) {
     //expiraEm: Date.now() + cincoDiasEmMilissegundos = 432000000
   };
 
-  //Gera e assina o token baseado no payload
+  //Gera e assina o token baseado no payload;
+  //cabeçalho gerado automaticamente;
+
+  //segunda parametro é a SENHA SECRETA do servidor(require(crypto).randomBytes(256).toString('base64'))
   const token = jwt.sign( payload, process.env.KEY_JWT, { expiresIn: '10m' } );
   return token;
 }
 
-function criaTokenOpaco (usuario) {
+async function criaTokenOpaco (usuario) {
   const tokenOpaco = crypto.randomBytes(24).toString('hex');
   const dataExpiracao = moment().add(5, 'd').unix(); 
+  await allowlistRefreshToken.adicionar(tokenOpaco, usuario.id, dataExpiracao); 
   return tokenOpaco;
 }
 
@@ -45,7 +50,7 @@ class UsuariosControllers {
   static async login ( req, res ) {
     try {
       const accessToken = criarWebToken( req.user );
-      const refreshToken  = criaTokenOpaco();
+      const refreshToken  = await criaTokenOpaco(req.user);
       res.set( 'Authorization', accessToken);
       return res.status( 200 ).json({ RefreshToken: refreshToken});
 
