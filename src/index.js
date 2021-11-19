@@ -4,7 +4,7 @@ const express = require('express');
 const routes = require('../src/routes');
 
 //Inicialização Redis
-require('../redis/blockList');
+require('../redis/blocklist-access-token');
 require('../redis/allowlist-refresh-token');
 
 const app = express();
