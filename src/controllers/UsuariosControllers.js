@@ -1,6 +1,7 @@
 const db = require('../models');
 const bcrypt = require('bcrypt'); 
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const blacklist = require('../../redis/manipula-blacklist');
 
 function criarWebToken ( usuario ) {
   const payload = {
@@ -39,6 +40,19 @@ class UsuariosControllers {
     } catch ( err ) {
       console.log( err );
 
+    }
+  }
+
+  static async logout ( req, res ) {
+    try {
+      const token = req.token; //esse token vem do middleware que é recupera da estratégia de autenticação. 
+      await blacklist.adiciona( token );
+  
+      return res.status(204).send();
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json( { erro: err.message } );
+      
     }
   }
 
