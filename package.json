@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "bcrypt": "^5.0.1",
+    "moment": "^2.29.1",
     "mysql2": "^2.3.3-rc.0",
     "nodemon": "^2.0.14"
   }
