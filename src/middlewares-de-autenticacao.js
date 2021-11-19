@@ -1,6 +1,24 @@
 const passport = require('passport');
-const {JsonWebTokenError, TokenExpiredError} = require('jsonwebtoken')
+const allowlistRefreshToken = require('../redis/allowlist-refresh-token');
+
+const {JsonWebTokenError, TokenExpiredError} = require('jsonwebtoken');
 const InvalidArgumentError = require('./err/InvalidArgumentError');
+const db = require('./models');
+
+
+async function verificaRefreshToken ( refreshToken ) {
+  if ( !refreshToken ) {
+    throw new InvalidArgumentError('Refresh não enviado ');
+  }
+
+  const id = await allowlistRefreshToken.buscar( refreshToken ); 
+  if ( !id ) {
+    throw new InvalidArgumentError("Refresh Token Inválido"); 
+  }
+
+  return id; 
+}
+
 
 module.exports = {
   local: ( req, res, next ) => {
@@ -49,5 +67,13 @@ module.exports = {
     req.user = usuario;
     return next();
    } )( req, res, next );
+  },
+  
+  refresh: async ( req, res, next ) => {
+    const { refreshToken } = req.body;
+    const id = await verificaRefreshToken(refreshToken);
+    await invalidaRefreshToken(refreshToken); 
+    await db.usuarios.findOne({where: {id: id}})
+    return next();
   }
 }
