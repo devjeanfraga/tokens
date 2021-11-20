@@ -3,22 +3,29 @@ const allowlistRefreshToken = require('../redis/allowlist-refresh-token');
 
 const {JsonWebTokenError, TokenExpiredError} = require('jsonwebtoken');
 const InvalidArgumentError = require('./err/InvalidArgumentError');
+const RefreshTokenInvalid = require('./err/refreshTokenInvalid');
 const db = require('./models');
 
 
 async function verificaRefreshToken ( refreshToken ) {
   if ( !refreshToken ) {
-    throw new InvalidArgumentError('Refresh não enviado ');
+    throw new RefreshTokenInvalid;
   }
 
-  const id = await allowlistRefreshToken.buscar( refreshToken ); 
+  const id = await allowlistRefreshToken.buscar( refreshToken );
+  
   if ( !id ) {
-    throw new InvalidArgumentError("Refresh Token Inválido"); 
+    throw new RefreshTokenInvalid; 
+  }else{
+    return id;
   }
 
-  return id; 
-}
+   
+};
 
+async function invalidaRefreshToken ( refreshToken ) {
+  await allowlistRefreshToken.deletar( refreshToken ); 
+}
 
 module.exports = {
   local: ( req, res, next ) => {
@@ -66,14 +73,31 @@ module.exports = {
     req.token = info.token;
     req.user = usuario;
     return next();
-   } )( req, res, next );
+   } ) ( req, res, next );
   },
   
   refresh: async ( req, res, next ) => {
-    const { refreshToken } = req.body;
-    const id = await verificaRefreshToken(refreshToken);
-    await invalidaRefreshToken(refreshToken); 
-    await db.usuarios.findOne({where: {id: id}})
-    return next();
+    try { 
+      const { refreshToken } = req.body;
+      const id = await verificaRefreshToken(refreshToken);
+      await invalidaRefreshToken(refreshToken); 
+      req.user = await db.usuarios.findOne({where: {id: id}});
+      //console.log(dataValues);
+      return next();
+
+    } catch (err) {
+      next(err)
+      
+      if ( err instanceof InvalidArgumentError) {
+        return res.status(401).json( { erro: err.message } );
+
+      } else {
+        console.log(err);
+        return res.status(401).json({message: err.message})
+      
+      }
+      
+    }
+    
   }
 }

@@ -5,7 +5,7 @@ const {promisify} = require('util');
 module.exports = lista => {
   const setAsync = promisify( lista.set ).bind( lista );
   const existsAsync = promisify( lista.exists ).bind( lista );
-  const getAsync = promisify( lista.get ).bind(  lista );
+  const getAsync = promisify( lista.get ).bind( lista );
   const delAsycn = promisify( lista.del ).bind( lista );
 
   return {
@@ -15,7 +15,9 @@ module.exports = lista => {
     },
 
     async buscar ( chave ) {
-      return getAsync( chave );
+      //const key = `allowlist-refresh-token:${chave}`;
+      return await getAsync( chave );
+
     },
 
     async verificarExistencia ( chave ) {

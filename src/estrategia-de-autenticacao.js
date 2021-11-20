@@ -11,7 +11,7 @@ const BearerStrategy = require('passport-http-bearer').Strategy;
 //outros
 const db = require('./models');
 const bcrypt = require('bcrypt');
-const blockList =  require('../redis/manipula-blocklist'); 
+const blockList =  require('../redis/blocklist-access-token'); 
 
 /*
 function verificaExpiracao(tempoExpiracao) {
@@ -67,8 +67,9 @@ passport.use(
         await verificaTokenBlocklist( token );
         //jwt.verify() de volve o payload se tiver válido
         const payload = jwt.verify(token, process.env.KEY_JWT);
-        const usuario = await db.usuarios.findOne({where: {id: payload.id}}) 
-        done(null, usuario, { token: token});
+        const usuario = await db.usuarios.findOne({where: { id: payload.id }}) 
+        console.log(usuario);
+        done(null, usuario, { token: token });
       } catch (err) {
         done(err);
       } 
