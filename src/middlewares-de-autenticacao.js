@@ -3,25 +3,11 @@ const allowlistRefreshToken = require('../redis/allowlist-refresh-token');
 
 const {JsonWebTokenError, TokenExpiredError} = require('jsonwebtoken');
 const InvalidArgumentError = require('./err/InvalidArgumentError');
-const RefreshTokenInvalid = require('./err/refreshTokenInvalid');
+const tokens = require('./tokens/tokens')
 const db = require('./models');
 
 
-async function verificaRefreshToken ( refreshToken ) {
-  if ( !refreshToken ) {
-    throw new RefreshTokenInvalid;
-  }
 
-  const id = await allowlistRefreshToken.buscar( refreshToken );
-  
-  if ( !id ) {
-    throw new RefreshTokenInvalid; 
-  }else{
-    return id;
-  }
-
-   
-};
 
 async function invalidaRefreshToken ( refreshToken ) {
   await allowlistRefreshToken.deletar( refreshToken ); 
@@ -79,7 +65,7 @@ module.exports = {
   refresh: async ( req, res, next ) => {
     try { 
       const { refreshToken } = req.body;
-      const id = await verificaRefreshToken(refreshToken);
+      const id = await tokens.refresh.verifica(refreshToken);
       await invalidaRefreshToken(refreshToken); 
       req.user = await db.usuarios.findOne({where: {id: id}});
       //console.log(dataValues);
@@ -89,11 +75,11 @@ module.exports = {
       next(err)
       
       if ( err instanceof InvalidArgumentError) {
-        return res.status(401).json( { erro: err.message } );
+        return res.status(401).json( { erro: err } );
 
       } else {
         console.log(err);
-        return res.status(401).json({message: err.message})
+        return res.status(401).json({message: err})
       
       }
       
