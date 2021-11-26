@@ -1,6 +1,7 @@
 const db = require('../models');
 const bcrypt = require('bcrypt'); 
 const tokens = require('../tokens/tokens')
+const emails  =  require('../emails/emails')
 
 
 class UsuariosControllers {
@@ -11,6 +12,8 @@ class UsuariosControllers {
       const custoHash = 12;
       const senhaHash = await bcrypt.hash( password, custoHash );
       const NewUser = await db.usuarios.create( { name, email, password:senhaHash } );
+
+      emails.enviarEmail(NewUser).catch(console.log)
       return res.status( 201 ).json( NewUser );
 
     } catch ( err ){
