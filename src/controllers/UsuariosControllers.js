@@ -1,6 +1,5 @@
 const db = require('../models');
 const bcrypt = require('bcrypt'); 
-const blocklist = require('../../redis/blocklist-access-token');
 const tokens = require('../tokens/tokens')
 
 
@@ -37,7 +36,7 @@ class UsuariosControllers {
   static async logout ( req, res ) {
     try {
       const token = req.token; //esse token vem do middleware que é recupera da estratégia de autenticação. 
-      await blocklist.adiciona( token );
+      await tokens.access.invalida( token );
   
       return res.status(204).send();
     } catch (err) {

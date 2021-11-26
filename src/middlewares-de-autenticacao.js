@@ -1,5 +1,4 @@
 const passport = require('passport');
-const allowlistRefreshToken = require('../redis/allowlist-refresh-token');
 
 const {JsonWebTokenError, TokenExpiredError} = require('jsonwebtoken');
 const InvalidArgumentError = require('./err/InvalidArgumentError');
@@ -9,9 +8,7 @@ const db = require('./models');
 
 
 
-async function invalidaRefreshToken ( refreshToken ) {
-  await allowlistRefreshToken.deletar( refreshToken ); 
-}
+
 
 module.exports = {
   local: ( req, res, next ) => {
@@ -66,7 +63,7 @@ module.exports = {
     try { 
       const { refreshToken } = req.body;
       const id = await tokens.refresh.verifica(refreshToken);
-      await invalidaRefreshToken(refreshToken); 
+      await tokens.refresh.invalida(refreshToken); 
       req.user = await db.usuarios.findOne({where: {id: id}});
       //console.log(dataValues);
       return next();

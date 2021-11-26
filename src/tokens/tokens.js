@@ -29,6 +29,10 @@ async function verificaTokenBlocklist ( token, blocklist, tokenName) {
  }
 }
 
+function inavlidaTokenJWT ( token, blocklist ) {
+  return blocklist.adicona( token );
+}
+
 async function criaTokenOpaco ( id, [ tempoQuantidade, tempoUnidade ], allowlist ) {
   const tokenOpaco = crypto.randomBytes(24).toString('hex');
   const dataExpiracao = moment().add(tempoQuantidade, tempoUnidade).unix(); 
@@ -58,6 +62,10 @@ function verificaTokenEnviado(token) {
   }
 }
 
+async function invalidaTokenOpaco ( token, allowlist ) {
+  await allowlist.deletar( token ); 
+}
+
 
 
 module.exports = {
@@ -71,6 +79,10 @@ module.exports = {
     }, 
     verifica ( token ) {
       return  verificaTokenJWT( token, this.lista, this.name );
+    },
+
+    invalida ( token ) {
+      return  inavlidaTokenJWT( token, this.lista );
     }
   },
 
@@ -79,10 +91,15 @@ module.exports = {
     expiracao: [ 5 , 'd' ],
 
     cria ( id ) {
-      return criaTokenOpaco( id, this.expiracao, this.lista )
+      return criaTokenOpaco( id, this.expiracao, this.lista );
     },
+
     verifica ( token ) {
-      return verificaTokenOpaco ( token, this.lista ) 
+      return verificaTokenOpaco ( token, this.lista ); 
+    },
+
+    invalida ( token ) {
+      invalidaTokenOpaco( token, this.lista );
     }
   }
 } 
