@@ -59,10 +59,11 @@ passport.use(
   new BearerStrategy (
      async (token, done) =>{
       try {
-        const id = await tokens.access.verifica()
+        const id = await tokens.access.verifica(token)
         const usuario = await db.usuarios.findOne({where: { id }}) 
-        console.log(usuario);
-        done(null, usuario, { token });
+        console.log('usuario da estrategia: ' + usuario, 'token da estrategia: ' + token);
+
+        done(null, usuario, { token: token });
       } catch (err) {
         done(err);
       } 

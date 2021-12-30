@@ -36,7 +36,7 @@ module.exports = {
    passport.authenticate( 'bearer',
    { session: false },
    (erro, usuario, info)=> {
-
+    console.log( 'inofs: ' + info )
     //Erros vindos do JWT.verify()
     if (erro && erro instanceof JsonWebTokenError) {
       return res.status(401).json( { erro: erro.message } );
@@ -46,6 +46,7 @@ module.exports = {
       return res.status( 401 ).json( { erro: erro.message, expiradoEm: erro.expiredAt } )
     } 
     if ( erro ) {
+      console.log(erro)
       return res.status(500).json( { erro: erro.message } );
 
     }  
@@ -82,5 +83,21 @@ module.exports = {
       
     }
     
-  }
+  },
+
+  verificacaoEmail: async ( req, res, next ) => {
+    try {
+      const  { token } = req.params;
+      const id = await tokens.verificacaoEmail.verifica(token);
+      const usuario =  await db.usuarios.findOne( {where: { id: id }} );
+      req.user = usuario; 
+      next()
+    } catch ( err ) {
+      console.log(err); 
+      //err do jasonWeb Token 
+      // ou err do tokenExpiredError
+    }
+  },
+  
+  
 }

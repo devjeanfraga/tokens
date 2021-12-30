@@ -5,7 +5,7 @@ const blockListAccesstoken =  require('../../redis/blocklist-access-token');
 const jwt = require('jsonwebtoken');
 
 
-function criarWebToken ( id, [tempoQuantidade, tempoUnidade] ) {
+function  criarWebToken ( id, [tempoQuantidade, tempoUnidade] ) {
   const payload = { id };
   const token = jwt.sign( payload, process.env.KEY_JWT, { expiresIn: tempoQuantidade + tempoUnidade } );
   return token;
@@ -15,17 +15,22 @@ function criarWebToken ( id, [tempoQuantidade, tempoUnidade] ) {
   // segundo parametro é a SENHA SECRETA do servidor(require(crypto).randomBytes(256).toString('base64'))
 }
 
-async function verificaTokenJWT ( token, blocklist, tokenName ) {
-  await verificaTokenBlocklist( token , blocklist, tokenName );
+async function verificaTokenJWT ( token, tokenName, blocklist ) {
+  await verificaTokenBlocklist( token , tokenName, blocklist );
   //jwt.verify() de volve o payload se tiver válido
   const { id } = jwt.verify(token, process.env.KEY_JWT); 
   return id; 
 }
 
-async function verificaTokenBlocklist ( token, blocklist, tokenName) {
-  const tokenNaBlocklist = await  blocklist.contemTokem( token ); 
- if ( tokenNaBlocklist ) {
+async function verificaTokenBlocklist ( token, tokenName, blocklist) {
+  console.log('token blocklis: ' + token, 'token name: ' + tokenName, 'blocklist name: ' + blocklist);
+  if (!blocklist) {
+    return;
+  } else {
+  const tokenNaBlocklist = await blocklist.contemToken( token ); 
+  if ( tokenNaBlocklist ) {
    throw new jwt.JsonWebTokenError(`${ tokenName } inválido por logout !`);
+  }
  }
 }
 
@@ -77,8 +82,9 @@ module.exports = {
     cria ( id ) {
       return criarWebToken( id, this.expiracao );
     }, 
+     
     verifica ( token ) {
-      return  verificaTokenJWT( token, this.lista, this.name );
+      return  verificaTokenJWT( token, this.name, this.lista );
     },
 
     invalida ( token ) {
@@ -101,6 +107,18 @@ module.exports = {
     invalida ( token ) {
       invalidaTokenOpaco( token, this.lista );
     }
+  },
+
+  verificacaoEmail: {
+    name: 'token de verificação de email', 
+    expiracao: [1, 'h'],
+    cria ( id ) {
+      return criarWebToken(id, this.expiracao);
+    },
+
+    verifica ( token ) {
+      return verificaTokenJWT(token, this.name);
+    },
   }
 } 
 

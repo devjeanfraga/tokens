@@ -1,21 +1,28 @@
 const db = require('../models');
 const bcrypt = require('bcrypt'); 
 const tokens = require('../tokens/tokens')
-const emails  =  require('../emails/emails')
+const {EmailVerificacao} =  require('../emails/emails')
 
+function geraEndereco (rota, token) {
+  const baseURL =  process.env.BASE_URL;
+  return `${baseURL}${rota}${token}`
+}
 
 class UsuariosControllers {
   static async add ( req, res ) {
-    const {name, email, password} = req.body;
+    const {name, email, password,  } = req.body;
 
-    try{
+    try{ 
       const custoHash = 12;
       const senhaHash = await bcrypt.hash( password, custoHash );
-      const NewUser = await db.usuarios.create( { name, email, password:senhaHash } );
+      const newUser = await db.usuarios.create( {name, email, password: senhaHash, emailVerificado: false});
 
-      emails.enviarEmail(NewUser).catch(console.log)
-      return res.status( 201 ).json( NewUser );
+      const token =  tokens.verificacaoEmail.cria(newUser.id);
+      const endereco =  geraEndereco('/usuarios/verifica_email/', token);
+      const emailVerificacao = new EmailVerificacao(newUser, endereco)
+      emailVerificacao.enviarEmail().catch(console.log);
 
+      return res.status( 201 ).json( newUser );
     } catch ( err ){
       console.log( err );
       return res.json( err );
@@ -55,6 +62,16 @@ class UsuariosControllers {
         return res.status(200).json(allUsers)
     }catch (err) {
       return res.status(500).json(err);
+    }
+  }
+
+  static async verificaEmail ( req, res ) {
+    try {
+      const usuario =  req.user;
+      usuario.update({ emailVerificado: true } );
+      return res.status(200).json();
+    } catch (err) {
+      console.log(err);
     }
   }
 

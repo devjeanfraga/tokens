@@ -10,5 +10,6 @@ const middlewareDeAuthenticacao = require('../middlewares-de-autenticacao');
 
 router.post('/posts', middlewareDeAuthenticacao.bearer, PostsControllers.add);
 router.get('/posts', PostsControllers.list);
+router.delete('/posts/:id', PostsControllers.remove); 
 
 module.exports =  router

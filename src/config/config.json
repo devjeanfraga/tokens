@@ -5,6 +5,7 @@
     "database": "seguranca",
     "host": "127.0.0.1",
     "dialect": "mysql"
+    
   },
   "test": {
     "username": "root",
@@ -15,8 +16,8 @@
   },
   "production": {
     "username": "root",
-    "password": null,
-    "database": "database_production",
+    "password": "javascript35",
+    "database": "seguranca",
     "host": "127.0.0.1",
     "dialect": "mysql"
   }
