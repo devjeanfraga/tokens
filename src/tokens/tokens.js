@@ -23,7 +23,7 @@ async function verificaTokenJWT ( token, tokenName, blocklist ) {
 }
 
 async function verificaTokenBlocklist ( token, tokenName, blocklist) {
-  console.log('token blocklis: ' + token, 'token name: ' + tokenName, 'blocklist name: ' + blocklist);
+ 
   if (!blocklist) {
     return;
   } else {

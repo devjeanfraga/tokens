@@ -32,7 +32,7 @@ module.exports = {
    passport.authenticate( 'bearer',
    { session: false },
    (erro, usuario, info)=> {
-    console.log( 'inofs: ' + info )
+     
     //Erros vindos do JWT.verify()
     if (erro && erro instanceof JsonWebTokenError) {
       return res.status(401).json( { erro: erro.message } );

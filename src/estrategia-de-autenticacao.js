@@ -1,6 +1,5 @@
 const passport = require('passport');
 
-
 //Erros
 const InvalidArgumentError = require('./err/InvalidArgumentError');
 
@@ -8,20 +7,24 @@ const InvalidArgumentError = require('./err/InvalidArgumentError');
 const LocalStrategy = require('passport-local').Strategy;
 const BearerStrategy = require('passport-http-bearer').Strategy;
 
-//outros
+//Database
 const db = require('./models');
+
+//comparação de critografia com bcrypt
 const bcrypt = require('bcrypt');
 
+//Manipulação de tokens
 const tokens = require('./tokens/tokens');
+
 /*
+
 function verificaExpiracao(tempoExpiracao) {
   if (tempoExpiracao > Date.now()) {
     throw new ExpirationError('Token expirado!');
   }
  }
+
  */
-
-
 
 function verificaUsuario ( usuario) {
   if(!usuario) {
@@ -61,8 +64,7 @@ passport.use(
       try {
         const id = await tokens.access.verifica(token)
         const usuario = await db.usuarios.findOne({where: { id }}) 
-        console.log('usuario da estrategia: ' + usuario, 'token da estrategia: ' + token);
-
+       
         done(null, usuario, { token: token });
       } catch (err) {
         done(err);

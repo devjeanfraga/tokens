@@ -10,12 +10,12 @@ function geraEndereco (rota, token) {
 
 class UsuariosControllers {
   static async add ( req, res ) {
-    const {name, email, password,  } = req.body;
+    const { name, email, cargo, password,  } = req.body;
 
     try{ 
       const custoHash = 12;
       const senhaHash = await bcrypt.hash( password, custoHash );
-      const newUser = await db.usuarios.create( {name, email, password: senhaHash, emailVerificado: false});
+      const newUser = await db.usuarios.create( {name, email, cargo, password: senhaHash, emailVerificado: false});
 
       const token =  tokens.verificacaoEmail.cria(newUser.id);
       const endereco =  geraEndereco('/usuarios/verifica_email/', token);
