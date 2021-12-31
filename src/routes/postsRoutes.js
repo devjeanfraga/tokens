@@ -5,11 +5,12 @@ const router = Router();
 //controllers
 const PostsControllers = require('../controllers/PostsControllers')
 
-// Outros
-const middlewareDeAuthenticacao = require('../middlewares-de-autenticacao');
+// Middlewares 
+const authenticacao = require('../middlewares-de-autenticacao');
+const autorizacao = require('../middleware-de-autorizacao')
 
-router.post('/posts', middlewareDeAuthenticacao.bearer, PostsControllers.add);
+router.post('/posts', authenticacao.bearer, PostsControllers.add);
 router.get('/posts', PostsControllers.list);
-router.delete('/posts/:id', PostsControllers.remove); 
+router.delete('/posts/:id', [authenticacao.bearer, autorizacao(['admin', 'editor'])], PostsControllers.remove); 
 
 module.exports =  router

@@ -6,10 +6,6 @@ const tokens = require('./tokens/tokens')
 const db = require('./models');
 
 
-
-
-
-
 module.exports = {
   local: ( req, res, next ) => {
     passport.authenticate( 'local',
