@@ -1,4 +1,4 @@
-const middlewareDeAuthenticacao = require('./middlewares-de-autenticacao');
+const middlewareDeAuthenticacao = require('../middlewares/middlewares-de-autenticacao');
 
 module.exports = (req, res, next) => {
   //propriedade que verifica se o usuario está autenticado

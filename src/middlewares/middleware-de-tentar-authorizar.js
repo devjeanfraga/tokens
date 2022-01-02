@@ -1,4 +1,4 @@
-const middlewareDeAutorizacao = require('./middleware-de-autorizacao');
+const middlewareDeAutorizacao = require('../middlewares/middleware-de-autorizacao');
 
 module.exports = (entidade, acao) =>  (req, res, next) => {
   if (req.estaAutenticado === true ) {

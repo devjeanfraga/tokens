@@ -15,6 +15,7 @@ controleDeAcesso
   .grant('admin')
   .createAny('posts')
   .deleteAny('posts')
+  .readAny('posts')
   .readAny('usuarios')
   .deleteAny('usuarios')  
 

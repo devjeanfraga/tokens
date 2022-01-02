@@ -1,4 +1,4 @@
-const controleDeAcesso = require('./controleDeAcesso/controle-de-acesso');
+const controleDeAcesso = require('../controleDeAcesso/controle-de-acesso');
 
 const metodos = {
   ler: {

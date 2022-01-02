@@ -1,9 +1,9 @@
 const passport = require('passport');
 
 const {JsonWebTokenError, TokenExpiredError} = require('jsonwebtoken');
-const InvalidArgumentError = require('./err/InvalidArgumentError');
-const tokens = require('./tokens/tokens')
-const db = require('./models');
+const InvalidArgumentError = require('../err/InvalidArgumentError');
+const tokens = require('../tokens/tokens');
+const db = require('../models');
 
 
 module.exports = {
