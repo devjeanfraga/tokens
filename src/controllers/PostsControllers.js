@@ -15,10 +15,28 @@ class PostsControllers {
 
   static async list (req, res) {
     try {
-      const allPosts = await db.posts.findAll();
+      let allPosts = await db.posts.findAll();
+      if(!req.estaAutenticado) {
+        allPosts = allPosts.map(post => ({
+          titulo: post.titulo
+        }));
+      }
       return res.status(200).json(allPosts);
     }catch (err) {
+      console.log(err)
       return res.status(500).json(err);
+    }
+  }
+
+  static async index (req, res) {
+    try {
+      const {id} = req.params
+      const post = await db.posts.findOne({where: {id: id}});
+  
+      res.status(200).json(post);
+    } catch (err) {
+      console.log(err);
+      res.status(404).json(err);
     }
   }
 
