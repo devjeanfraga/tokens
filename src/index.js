@@ -3,7 +3,10 @@ require('dotenv').config();
 const express = require('express');
 const routes = require('../src/routes');
 const InvalidArgumentError = require('./err/InvalidArgumentError');
+const NotFound = require('./err/NotFound');
+const Unauthorized = require('./err/Unauthorized')
 const { JsonWebTokenError, TokenExpiredError } = require('jsonwebtoken');
+
 
 //Inicialização Redis
 require('../redis/blocklist-access-token');
@@ -21,6 +24,12 @@ app.use((err, req, res, next) => {
   if ( err instanceof InvalidArgumentError ) {
     status = 400;
   }
+  if (err instanceof NotFound) {
+    status = 404;
+  }
+  if (err instanceof Unauthorized) {
+    status = 401;
+  }
   if (err instanceof JsonWebTokenError) {
     status = 401;
   }
@@ -28,6 +37,7 @@ app.use((err, req, res, next) => {
     status = 401;
     body.expiradoEm = err.expiredAt;
   }
+
 
 
   //resposta formatada para ser emitida;

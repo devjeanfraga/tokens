@@ -2,6 +2,7 @@ const passport = require('passport');
 
 //Erros
 const InvalidArgumentError = require('./err/InvalidArgumentError');
+const Unauthorized = require('./err/Unauthorized');
 
 //Estrategias 
 const LocalStrategy = require('passport-local').Strategy;
@@ -28,14 +29,14 @@ function verificaExpiracao(tempoExpiracao) {
 
 function verificaUsuario ( usuario) {
   if(!usuario) {
-    throw new Error ('Não existe usuário com esse email');
+    throw new Unauthorized();
   }
 };
 
 async function verificaPassword (password, passwordHash) {
   const passwordValido = await bcrypt.compare( password, passwordHash);
   if (!passwordValido) {
-    throw new InvalidArgumentError;
+    throw new Unauthorized();
   }
 };
 

@@ -1,8 +1,15 @@
 const crypto =  require('crypto'); 
 const moment = require('moment'); 
+
+//Redis
 const allowlistRefreshToken = require('../../redis/allowlist-refresh-token'); 
 const blockListAccesstoken =  require('../../redis/blocklist-access-token'); 
+
+//jsonwebToken
 const jwt = require('jsonwebtoken');
+
+//Erros
+const RefreshTokenInvalid  = require('../err/refreshTokenInvalid');
 
 
 function  criarWebToken ( id, [tempoQuantidade, tempoUnidade] ) {

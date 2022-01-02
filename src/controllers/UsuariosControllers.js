@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const tokens = require('../tokens/tokens')
 const {EmailVerificacao} =  require('../emails/emails');
 const { nextTick } = require('process');
+const Notfound = require('../err/NotFound');
 
 function geraEndereco (rota, token) {
   const baseURL =  process.env.BASE_URL;
@@ -82,7 +83,11 @@ class UsuariosControllers {
   static async remove (req, res, next) {
     const  {userID} = req.params
     try {
-       await db.usuarios.destroy({where: {id: Number(userID)}});
+        const user = await db.usuarios.findByPk(userID);
+        if (!user) {
+          throw new Notfound('usuário');
+        }
+       await user.destroy({where: {id: Number(userID)}});
        return res.status(204).json()
     } catch (err) {
       console.log( err );
