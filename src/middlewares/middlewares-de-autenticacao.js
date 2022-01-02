@@ -12,14 +12,8 @@ module.exports = {
      { session: false },
      ( erro, usuario, info ) => {
       
-      if ( erro && erro instanceof InvalidArgumentError) {
-        return res.status(401).json( { erro: erro.message} );
-
-      } else if ( erro ) {
-        return res.status(500).json( { erro: erro.message } );
-
-      } else if ( !usuario ) { 
-        return res.status(401).json();
+      if (erro) {
+        return next(erro);
       }
 
       req.user = usuario;
@@ -34,22 +28,9 @@ module.exports = {
    { session: false },
    (erro, usuario, info)=> {
      
-    //Erros vindos do JWT.verify()
-    if (erro && erro instanceof JsonWebTokenError) {
-      return res.status(401).json( { erro: erro.message } );
-      
-    }
-    if ( erro && erro instanceof TokenExpiredError ) {
-      return res.status( 401 ).json( { erro: erro.message, expiradoEm: erro.expiredAt } )
-    } 
-    if ( erro ) {
-      console.log(erro)
-      return res.status(500).json( { erro: erro.message } );
-
-    }  
-    if ( !usuario ) {
-      return res.status(401).json();
-    }
+   if ( erro ) {
+     return next(erro);
+   }
 
     req.token = info.token;
     req.user = usuario;
@@ -92,8 +73,7 @@ module.exports = {
       next()
     } catch ( err ) {
       console.log(err); 
-      //err do jasonWeb Token 
-      // ou err do tokenExpiredError
+      next(err); 
     }
   },
   

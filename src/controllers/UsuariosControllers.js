@@ -1,7 +1,8 @@
 const db = require('../models');
 const bcrypt = require('bcrypt'); 
 const tokens = require('../tokens/tokens')
-const {EmailVerificacao} =  require('../emails/emails')
+const {EmailVerificacao} =  require('../emails/emails');
+const { nextTick } = require('process');
 
 function geraEndereco (rota, token) {
   const baseURL =  process.env.BASE_URL;
@@ -9,7 +10,7 @@ function geraEndereco (rota, token) {
 }
 
 class UsuariosControllers {
-  static async add ( req, res ) {
+  static async add ( req, res, next ) {
     const { name, email, cargo, password,  } = req.body;
 
     try{ 
@@ -25,12 +26,12 @@ class UsuariosControllers {
       return res.status( 201 ).json( newUser );
     } catch ( err ){
       console.log( err );
-      return res.json( err );
+      next( err ) ;
 
     }
   }
 
-  static async login ( req, res ) {
+  static async login ( req, res, next ) {
     try {
       const accessToken = tokens.access.cria( req.user.id );
       const refreshToken  = await tokens.refresh.cria(req.user.id);
@@ -39,53 +40,57 @@ class UsuariosControllers {
 
     } catch ( err ) {
       console.log( err );
+      next( err ) ;
 
     }
   }
 
-  static async logout ( req, res ) {
+  static async logout ( req, res, next ) {
     try {
       const token = req.token; //esse token vem do middleware que é recupera da estratégia de autenticação. 
       await tokens.access.invalida( token );
   
       return res.status(204).send();
     } catch (err) {
-      console.log(err)
-      return res.status(500).json( { erro: err.message } );
+      console.log( err );
+      next( err ) ;
       
     }
   }
 
-  static async list (req, res) {
+  static async list (req, res, next) {
     try{
         const allUsers = await db.usuarios.findAll();
         return res.status(200).json(allUsers)
     }catch (err) {
-      return res.status(500).json(err);
+      console.log( err );
+      next( err ) ;
     }
   }
 
-  static async verificaEmail ( req, res ) {
+  static async verificaEmail ( req, res, next) {
     try {
       const usuario =  req.user;
       usuario.update({ emailVerificado: true } );
       return res.status(200).json();
     } catch (err) {
-      console.log(err);
+      console.log( err );
+      next( err ) ;
     }
   }
 
-  static async remove (req, res) {
+  static async remove (req, res, next) {
     const  {userID} = req.params
     try {
        await db.usuarios.destroy({where: {id: Number(userID)}});
        return res.status(204).json()
     } catch (err) {
-      return res.status(500).json({message: "oops algo deu errado!"})
+      console.log( err );
+      next( err ) ;
     }
   }
 
 
 }
 
-module.exports = UsuariosControllers
+module.exports = UsuariosControllers;
