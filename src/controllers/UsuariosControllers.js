@@ -1,10 +1,20 @@
+//DataBase
 const db = require('../models');
-const bcrypt = require('bcrypt'); 
-const tokens = require('../tokens/tokens')
-const {EmailVerificacao} =  require('../emails/emails');
-const { nextTick } = require('process');
+
+//tokens
+const tokens = require('../tokens/tokens');
+
+//erros
 const Notfound = require('../err/NotFound');
 
+//outros
+const bcrypt = require('bcrypt'); 
+const {EmailVerificacao} =  require('../emails/emails');
+
+//conversores
+const {ConversorUsuarios} = require('../conversor/Conversor');
+
+//funcionalidades
 function geraEndereco (rota, token) {
   const baseURL =  process.env.BASE_URL;
   return `${baseURL}${rota}${token}`

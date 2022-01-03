@@ -13,6 +13,16 @@ require('../redis/blocklist-access-token');
 require('../redis/allowlist-refresh-token');
 
 const app = express();
+
+//Mideddleware de Definição de Headers;
+app.use( (req, res, next)=>{
+  res.set({
+    'Content-Type': 'application/json'
+  });
+  next();
+})
+
+//Rotas
 routes(app);
 
 //Middeleware de TRATAMENTO DE ERROS;

@@ -1,4 +1,5 @@
 const db = require('../models');
+const {ConversorPosts} = require('../conversor/Conversor')
 
 class PostsControllers {
   static async add (req, res) {
@@ -16,12 +17,17 @@ class PostsControllers {
   static async list (req, res) {
     try {
       let allPosts = await db.posts.findAll();
+      const conversor = new ConversorPosts('json', req.acesso.todos.permitido ? 
+      req.acesso.todos.atributos : req.acesso.apenasSeu.atributos);
+
       if(!req.estaAutenticado) {
-        allPosts = allPosts.map(post => ({
-          titulo: post.titulo
-        }));
+        allPosts = allPosts.map(post => {
+         post.conteudo = post.conteudo.substr(0, 10) + '... você deve assinar o blog para ter acesso a restante do conteúdo';
+        return post;
+        });
       }
-      return res.status(200).json(allPosts);
+      console.log(conversor.converter(allPosts));
+      return res.status(200).send(conversor.converter(allPosts));
     }catch (err) {
       console.log(err)
       return res.status(500).json(err);
