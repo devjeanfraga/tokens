@@ -35,9 +35,9 @@ class Email {
     if ( process.env.NODE_ENV !== 'production' ) { 
       //para recurperar o link do email teste
       console.log("URL : " + nodemailer.getTestMessageUrl(info));
-    }
-  }
-}
+    };
+  };
+};
 
 
 class EmailVerificacao extends Email {
@@ -50,9 +50,22 @@ class EmailVerificacao extends Email {
     this.text =  `Olá! Verifique seu email aqui: ${endereco} `;
     this.html = `<h1>Olá!</h1> Verifique seu email aqui: <a href = "${endereco}"> ${endereco} </a>`;
     
-  }
-}
+  };
+};
+
+class EmailRedefinicaoDeSenha extends Email {
+  constructor ( usuario ) {
+    super();
+    
+    this.from = '"Blog do Código"<noreply@blogdocodigo.com.br>';
+    this.to = usuario.email;
+    this.subject =  'Redefinição de senha';
+    this.text =  `Olá! Você solicitou uma redefinição de senha`;
+    this.html = `<h1>Olá!</h1> Olá! Você solicitou uma redefinição de senha`;
+    
+  };
+};
 
 
 
-module.exports = { EmailVerificacao };
+module.exports = { EmailVerificacao, EmailRedefinicaoDeSenha };
