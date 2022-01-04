@@ -6,7 +6,7 @@ const middlewareDeAuthorizacao = require('../middlewares/middleware-de-autorizac
 const router = Router()
 
 router.post('/usuarios', UsuariosControllers.add);
-router.post('/usuarios/esqueci-minha-senha');
+router.post('/usuarios/esqueci-minha-senha', UsuariosControllers.forgotPassword);
 router.post('/usuarios/login', middlewareDeAuthenticacao.local, UsuariosControllers.login);
 router.get('/usuarios', [middlewareDeAuthenticacao.bearer, middlewareDeAuthorizacao('usuarios', 'ler')], UsuariosControllers.list);
 router.delete('/usuarios/:userID',[middlewareDeAuthenticacao.bearer, middlewareDeAuthenticacao.local, middlewareDeAuthorizacao('usuarios', 'remover')],  UsuariosControllers.remove);
