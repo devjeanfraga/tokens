@@ -4,6 +4,7 @@ const moment = require('moment');
 //Redis
 const allowlistRefreshToken = require('../../redis/allowlist-refresh-token'); 
 const blockListAccesstoken =  require('../../redis/blocklist-access-token'); 
+const listaDeRedefinicaoDeSenha = require('../../redis/listaDeRedefinicaoDeSenha');
 
 //jsonwebToken
 const jwt = require('jsonwebtoken');
@@ -126,6 +127,16 @@ module.exports = {
     verifica ( token ) {
       return verificaTokenJWT(token, this.name);
     },
+  },
+
+  RedefinicaoDeSenha: {
+    name: 'Token de redefinção de senha',
+    lista : listaDeRedefinicaoDeSenha,
+    expiracao: [1, 'h'],
+    
+    criarToken(id) {
+      return criaTokenOpaco( id, this.expiracao, this.lista);
+     }
   }
 } 
 
