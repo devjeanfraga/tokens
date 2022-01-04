@@ -115,10 +115,11 @@ class UsuariosControllers {
   static async forgotPassword (req, res, next) {
     const repostaPadrao = {message: "Se encontrarmos um usuário com este e-mail, enviaremos as instruções para o mesmo redefinir a senha"};
     const { email } = req.body;
-    
+
     try { 
       const user = await db.usuarios.findOne({where: { email: email }})
-      const emailForgotPassword= new EmailRedefinicaoDeSenha(user);
+      const token = await tokens.RedefinicaoDeSenha.criarToken(user.id);
+      const emailForgotPassword= new EmailRedefinicaoDeSenha(user, token);
       await emailForgotPassword.enviarEmail();
 
       res.send(repostaPadrao);
