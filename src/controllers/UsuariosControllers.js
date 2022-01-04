@@ -9,7 +9,7 @@ const Notfound = require('../err/NotFound');
 
 //outros
 const bcrypt = require('bcrypt'); 
-const {EmailVerificacao} =  require('../emails/emails');
+const {EmailVerificacao, EmailRedefinicaoDeSenha} =  require('../emails/emails');
 
 //conversores
 const {ConversorUsuarios} = require('../conversor/Conversor');
@@ -72,7 +72,13 @@ class UsuariosControllers {
   static async list (req, res, next) {
     try{
         const allUsers = await db.usuarios.findAll();
-        return res.status(200).json(allUsers)
+        const conversor = new ConversorUsuarios(
+          'json',
+          req.acesso.todos.permitido ? req.acesso.todos.atributos :
+          req.acesso.apenasSeu.atributos
+          )
+          
+        return res.status(200).send(conversor.converter(allUsers));
     }catch (err) {
       console.log( err );
       next( err ) ;
@@ -104,6 +110,27 @@ class UsuariosControllers {
       next( err ) ;
     }
   }
+
+  //Recuperar Senha do usuário. 
+  static async forgotPassword (req, res, next) {
+    const repostaPadrao = {message: "Se encontrarmos um usuário com este e-mail, enviaremos as instruções para o mesmo redefinir a senha"};
+    const { email } = req.body;
+    
+    try { 
+      const user = await db.usuarios.findOne({where: { email: email }})
+      const emailForgotPassword= new EmailRedefinicaoDeSenha(user);
+      await emailForgotPassword.enviarEmail();
+
+      res.send(repostaPadrao);
+    }catch (err) {
+      console.log(err);
+      if( err  instanceof Notfound ) {
+        res.send(repostaPadrao)
+        return;
+      };
+      next(err);
+    };
+  };
 
 
 }
