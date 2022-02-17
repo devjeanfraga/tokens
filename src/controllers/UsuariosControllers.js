@@ -13,6 +13,7 @@ const {EmailVerificacao, EmailRedefinicaoDeSenha} =  require('../emails/emails')
 
 //conversores
 const {ConversorUsuarios} = require('../conversor/Conversor');
+const InvalidArgumentError = require('../err/InvalidArgumentError');
 
 //funcionalidades
 function geraEndereco (rota, token) {
@@ -111,7 +112,7 @@ class UsuariosControllers {
     }
   }
 
-  //Recuperar Senha do usuário. 
+  //Envio de email para recuperação de senha. 
   static async forgotPassword (req, res, next) {
     const repostaPadrao = {message: "Se encontrarmos um usuário com este e-mail, enviaremos as instruções para o mesmo redefinir a senha"};
     const { email } = req.body;
@@ -133,6 +134,28 @@ class UsuariosControllers {
     };
   };
 
+  //Mudança de Senha do Usuário. 
+  static async changePassword (req, res, next) {
+    const { token, password } = req.body;
+    try{
+      if( typeof token !== 'string' || token.length === 0 ) {
+        throw new InvalidArgumentError;
+      };
+
+      const id =  await tokens.RedefinicaoDeSenha.verifica(token); 
+      const user = await db.usuarios.findByPk(id);
+
+      const custoHash = 12;
+      const senhaHash = await bcrypt.hash( password, custoHash );
+
+      await user.update( { password: senhaHash }, { where : { id: id } } );
+
+      return res.status(200).send({message: 'Sua senha foi atualizada com sucesso'}); 
+    }catch ( err) {
+      console.log(err)
+      next(err);
+    }
+  }
 
 }
 

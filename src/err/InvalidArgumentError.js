@@ -1,7 +1,7 @@
 
 class InvalidArgumentError extends Error {
   constructor () {
-    super('Email ou senha inválidos')
+    super('Você enviou alguma informação errada, por gentileza, verifique os campos e tente novamente :)' )
   }
   
 }

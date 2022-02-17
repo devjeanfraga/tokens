@@ -20,7 +20,9 @@ function  criarWebToken ( id, [tempoQuantidade, tempoUnidade] ) {
   // atributo que poderia ser colado dentro do obj payload: expiraEm: Date.now() + cincoDiasEmMilissegundos = 432000000
   // jwt.sign: Gera e assina o token baseado no payload;
   // cabeçalho gerado automaticamente;
-  // segundo parametro é a SENHA SECRETA do servidor(require(crypto).randomBytes(256).toString('base64'))
+  // segundo parametro é a SENHA SECRETA do servidor:
+  //  *** Comando no Terminal ***
+  // node -e "console.log(require('crypto').randomBytes(256).toString('base64'))"
 }
 
 async function verificaTokenJWT ( token, tokenName, blocklist ) {
@@ -133,10 +135,14 @@ module.exports = {
     name: 'Token de redefinção de senha',
     lista : listaDeRedefinicaoDeSenha,
     expiracao: [1, 'h'],
-    
+
     criarToken(id) {
       return criaTokenOpaco( id, this.expiracao, this.lista);
-     }
+     },
+
+     verifica ( token ) {
+      return verificaTokenOpaco ( token, this.lista ); 
+    },
   }
 } 
 
